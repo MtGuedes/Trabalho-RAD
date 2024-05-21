@@ -1,6 +1,6 @@
 import tkinter
 from tkinter import messagebox as mb
-from tkinter import ttk
+from tkinter import Tk
 import sqlite3
 
 #começar com tela com um botão e um entry (nome)- v1
@@ -40,13 +40,26 @@ def pegavalores():
 def funcExemplo():
     print("Exemplo de funcao")
     
+import tkinter as ttk
+
 def Main():
-    root = tkinter.Tk()
+    root = ttk.Tk()
     root.title("Trabalho RAD")
+    root.geometry("400x300")
     root.resizable(False, False)
-    
-    label = tkinter.Label(root, text="Nome")
-    label.pack()
+
+    # Carrega a imagem de fundo
+    imagem_fundo = tkinter.PhotoImage(file=r"C:\Users\202109350994\Downloads\Trabalho-RAD\teste.png")
+
+    # Cria um label para a imagem de fundo e exibe-a
+    label_fundo = tkinter.Label(root, image=imagem_fundo)
+    label_fundo.place(x=0, y=0, relwidth=1, relheight=1)
+
+    label_nome = tkinter.Label(root, text="Nome")
+    label_nome.pack()
+    textoNome = tkinter.StringVar()
+    entry_nome = tkinter.Entry(root, textvariable=textoNome)
+    entry_nome.pack()
 
     label_cpf = tkinter.Label(root, text="CPF")
     label_cpf.pack()
@@ -59,11 +72,6 @@ def Main():
     textoEstado = tkinter.StringVar()
     entry_estado = tkinter.Entry(root, textvariable=textoEstado)
     entry_estado.pack()
-
-    textoEntrada = tkinter.StringVar()
-    e1 = tkinter.Entry(root)
-    e1.bind('<Key>', lambda x:textoEntrada.set(e1.get()+x.char))
-    e1.pack()
     
     test2 = tkinter.Button(root, text="Salvar")
     test2['command'] = funcExemplo  #alterar para chamar outra função
