@@ -48,6 +48,18 @@ def Main():
     label = tkinter.Label(root, text="Nome")
     label.pack()
 
+    label_cpf = tkinter.Label(root, text="CPF")
+    label_cpf.pack()
+    textoCPF = tkinter.StringVar()
+    entry_cpf = tkinter.Entry(root, textvariable=textoCPF)
+    entry_cpf.pack()
+
+    label_estado = tkinter.Label(root, text="Estado")
+    label_estado.pack()
+    textoEstado = tkinter.StringVar()
+    entry_estado = tkinter.Entry(root, textvariable=textoEstado)
+    entry_estado.pack()
+
     textoEntrada = tkinter.StringVar()
     e1 = tkinter.Entry(root)
     e1.bind('<Key>', lambda x:textoEntrada.set(e1.get()+x.char))
