@@ -23,13 +23,47 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS Tabela1
                 (nome TEXT, 
                 cpf TEXT,
                 estado INTEGER)""")
+
 def VerificarCPF(CPF):
-    #CPF deve ser na forma "123.456.789-10"
-    for trecho in CPF.split("."):
-        if len(trecho)!=3:
-            return False
-        else:
-            return True
+    # Remove os pontos e o traço do CPF
+    cpf_numeros = CPF.replace(".", "").replace("-", "")
+    
+    # O CPF deve ter 11 dígitos
+    if len(cpf_numeros) != 11:
+        return False
+    
+    # Verifica se todos os caracteres são dígitos
+    if not cpf_numeros.isdigit():
+        return False
+    
+    # Verifica se há pelo menos dois dígitos diferentes
+    if len(set(cpf_numeros)) == 1:
+        return False
+    
+    # Verifica se o CPF é válido usando o algoritmo de validação
+    soma = 0
+    multiplicador = 10
+    for i in range(9):
+        soma += int(cpf_numeros[i]) * multiplicador
+        multiplicador -= 1
+    resto = (soma * 10) % 11
+    if resto == 10:
+        resto = 0
+    if resto != int(cpf_numeros[9]):
+        return False
+    
+    soma = 0
+    multiplicador = 11
+    for i in range(10):
+        soma += int(cpf_numeros[i]) * multiplicador
+        multiplicador -= 1
+    resto = (soma * 10) % 11
+    if resto == 10:
+        resto = 0
+    if resto != int(cpf_numeros[10]):
+        return False
+    
+    return True
 
 def inserevalores(Valor1, Valor2, Valor3):
     cursor.execute("INSERT INTO Tabela1 VALUES (?, ?, ?)", (Valor1, Valor2, Valor3))
