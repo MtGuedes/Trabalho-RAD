@@ -30,7 +30,7 @@ def criar_conexao():
 def ler_estados():
     try:
         with open("config.txt", "r") as file:
-            opcoes = file.readlines()
+            opcoes = file.read().split(";")
             opcoes = [opcao.strip() for opcao in opcoes]
         return opcoes
     except FileNotFoundError:
