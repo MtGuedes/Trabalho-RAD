@@ -1,5 +1,1 @@
-Rio de Janeiro
-São Paulo
-Bahia
-Minas Gerais
-Espirito Santo
+AM;BA;CE;DF;ES;GO;MA;MT;MS;MG
