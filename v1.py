@@ -14,15 +14,32 @@ import sqlite3
 #Merge de x com v - v6
 #Adicionar verificação de CPF e de estado, com base na função cpf e na lista de estados .txt antes de adicionar no sqlite v7
 
-#Cria conexção
-connection = sqlite3.connect("teste.db")
+def criar_tabela():
+    connection = sqlite3.connect("teste.db")
+    cursor = connection.cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS Tabela1 
+                    (nome TEXT, 
+                    cpf TEXT,
+                    estado TEXT)""")
+    connection.commit()
+    connection.close()
 
-#Cria o cursos e cria a tabela
-cursor = connection.cursor()
-cursor.execute("""CREATE TABLE IF NOT EXISTS Tabela1 
-                (nome TEXT, 
-                cpf TEXT,
-                estado INTEGER)""")
+def criar_conexao():
+    return sqlite3.connect("teste.db")
+
+def ler_estados():
+    try:
+        with open("config.txt", "r") as file:
+            opcoes = file.readlines()
+            opcoes = [opcao.strip() for opcao in opcoes]
+        return opcoes
+    except FileNotFoundError:
+        print("Arquivo config.txt não encontrado.")
+        return []
+    
+opcoes = ler_estados()
+print("Opções no config.txt:", opcoes)
+
 def VerificarCPF(CPF):
     #CPF deve ser na forma "123.456.789-10"
     for trecho in CPF.split("."):
@@ -31,9 +48,11 @@ def VerificarCPF(CPF):
         else:
             return True
 
-def inserevalores(Valor1, Valor2, Valor3):
+def inserevalores(cursor, Valor1, Valor2, Valor3):
     cursor.execute("INSERT INTO Tabela1 VALUES (?, ?, ?)", (Valor1, Valor2, Valor3))
-    connection.commit()
+
+connection = criar_conexao()
+cursor = connection.cursor()
 
 def pegavalores():
     #Pega valores da tabela
@@ -44,22 +63,30 @@ def salvar_dados():
     nome = textoNome.get()
     cpf = textoCPF.get()
     estado = textoEstado.get()
-        
+    
+    connection = criar_conexao()
+    cursor = connection.cursor()
+
     if nome.strip() == "" or cpf.strip() == "" or estado.strip() == "":
         print("Por favor, preencha todos os campos.")
         return
     
-    inserevalores(nome, cpf, estado)
+    inserevalores(cursor, nome, cpf, estado)
     print("Dados salvos com sucesso!")
 
+    connection.commit()
+    connection.close()
     
 import tkinter as ttk
 
-def Main():
-    root = ttk.Tk()
+def main():
+    root = tkinter.Tk()
     root.title("Trabalho RAD")
     root.geometry("400x300")
     root.resizable(False, False)
+
+    # Carrega as opções de Estados do arquivo config.txt
+    opcoes = ler_estados()
 
     # Carrega a imagem de fundo
     imagem_fundo = tkinter.PhotoImage(file=r"C:\Users\Nina\Downloads\Trabalho Python\Trabalho-RAD\teste.png")
@@ -84,16 +111,25 @@ def Main():
 
     label_estado = tkinter.Label(root, text="Estado")
     label_estado.pack()
-    global textoEstado
-    textoEstado = tkinter.StringVar()
-    entry_estado = tkinter.Entry(root, textvariable=textoEstado)
-    entry_estado.pack()
-    
-    btn_salvar = ttk.Button(root, text="Salvar", command=salvar_dados)
-    btn_salvar.pack()
 
-    root.iconify() #Minimiza a tela
-    root.update()
-    root.deiconify() #Maximiza a tela
-    root.mainloop()  #loop principal, impede o código de seguir e permite capturar inputs
-Main()
+    # Cria a variável para armazenar o Estado selecionado
+    global textoEstado
+    textoEstado = tkinter.StringVar(root)
+    if opcoes:
+        textoEstado.set(opcoes[0])
+    
+    # Cria o menu de opções de Estados
+    menu_opcoes = tkinter.OptionMenu(root, textoEstado, *opcoes)
+    menu_opcoes.pack(padx=10, pady=10)
+
+    connection = criar_conexao()
+    cursor = connection.cursor()
+
+    # Cria o botão "Salvar" e o posiciona abaixo do menu de opções
+    btn_salvar = ttk.Button(root, text="Salvar", command=salvar_dados)
+    btn_salvar.pack(pady=10)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
