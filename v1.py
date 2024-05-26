@@ -19,7 +19,10 @@ connection = sqlite3.connect("teste.db")
 
 #Cria o cursos e cria a tabela
 cursor = connection.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS Tabela1 (nome TEXT, curso TEXT, matricula INTEGER)")
+cursor.execute("""CREATE TABLE IF NOT EXISTS Tabela1 
+                (nome TEXT, 
+                cpf TEXT,
+                estado INTEGER)""")
 def VerificarCPF(CPF):
     #CPF deve ser na forma "123.456.789-10"
     for trecho in CPF.split("."):
@@ -28,17 +31,27 @@ def VerificarCPF(CPF):
         else:
             return True
 
-def inserevalores(Valor1, Valor2):
-    #Insere linha na tabela
-    cursor.execute("INSERT INTO Tabela1 VALUES ('"+Valor1+"', '"+Valor2+"')")
+def inserevalores(Valor1, Valor2, Valor3):
+    cursor.execute("INSERT INTO Tabela1 VALUES (?, ?, ?)", (Valor1, Valor2, Valor3))
+    connection.commit()
 
 def pegavalores():
     #Pega valores da tabela
     rows = cursor.execute("SELECT * FROM Tabela1").fetchall()
     print(rows)
 
-def funcExemplo():
-    print("Exemplo de funcao")
+def salvar_dados():
+    nome = textoNome.get()
+    cpf = textoCPF.get()
+    estado = textoEstado.get()
+        
+    if nome.strip() == "" or cpf.strip() == "" or estado.strip() == "":
+        print("Por favor, preencha todos os campos.")
+        return
+    
+    inserevalores(nome, cpf, estado)
+    print("Dados salvos com sucesso!")
+
     
 import tkinter as ttk
 
@@ -49,7 +62,7 @@ def Main():
     root.resizable(False, False)
 
     # Carrega a imagem de fundo
-    imagem_fundo = tkinter.PhotoImage(file=r"C:\Users\202109350994\Downloads\Trabalho-RAD\teste.png")
+    imagem_fundo = tkinter.PhotoImage(file=r"C:\Users\Nina\Downloads\Trabalho Python\Trabalho-RAD\teste.png")
 
     # Cria um label para a imagem de fundo e exibe-a
     label_fundo = tkinter.Label(root, image=imagem_fundo)
@@ -57,25 +70,27 @@ def Main():
 
     label_nome = tkinter.Label(root, text="Nome")
     label_nome.pack()
+    global textoNome
     textoNome = tkinter.StringVar()
     entry_nome = tkinter.Entry(root, textvariable=textoNome)
     entry_nome.pack()
 
     label_cpf = tkinter.Label(root, text="CPF")
     label_cpf.pack()
+    global textoCPF
     textoCPF = tkinter.StringVar()
     entry_cpf = tkinter.Entry(root, textvariable=textoCPF)
     entry_cpf.pack()
 
     label_estado = tkinter.Label(root, text="Estado")
     label_estado.pack()
+    global textoEstado
     textoEstado = tkinter.StringVar()
     entry_estado = tkinter.Entry(root, textvariable=textoEstado)
     entry_estado.pack()
     
-    test2 = tkinter.Button(root, text="Salvar")
-    test2['command'] = funcExemplo  #alterar para chamar outra função
-    test2.pack()
+    btn_salvar = ttk.Button(root, text="Salvar", command=salvar_dados)
+    btn_salvar.pack()
 
     root.iconify() #Minimiza a tela
     root.update()
