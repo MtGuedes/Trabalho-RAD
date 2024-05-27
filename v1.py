@@ -15,14 +15,33 @@ import sqlite3
 #Adicionar verificação de CPF e de estado, com base na função cpf e na lista de estados .txt antes de adicionar no sqlite v7
 
 #Cria conexção
-connection = sqlite3.connect("teste.db")
+def criar_conexao():
+    return sqlite3.connect("teste.db")
 
 #Cria o cursos e cria a tabela
-cursor = connection.cursor()
-cursor.execute("""CREATE TABLE IF NOT EXISTS Tabela1 
-                (nome TEXT, 
-                cpf TEXT,
-                estado INTEGER)""")
+def criar_tabela():
+    connection = sqlite3.connect("teste.db")
+    cursor = connection.cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS Tabela1 
+                    (nome TEXT, 
+                    cpf TEXT,
+                    estado TEXT)""")
+    connection.commit()
+    connection.close()
+
+def ler_estados():
+    try:
+        with open("config.txt", "r") as file:
+            opcoes = file.read().split(";")
+            opcoes = [opcao.strip() for opcao in opcoes]
+        return opcoes
+    except FileNotFoundError:
+        print("Arquivo config.txt não encontrado.")
+        return []
+    
+opcoes = ler_estados()
+print("Opções no config.txt:", opcoes)
+
 def VerificarCPF(CPF):
     # Remove os pontos e o traço do CPF
     cpf_numeros = CPF.replace(".", "").replace("-", "")
@@ -84,7 +103,7 @@ def salvar_dados():
     connection = criar_conexao()
     cursor = connection.cursor()
 
-    if verificar_cpf(cpf):
+    if VerificarCPF(cpf):
         inserevalores(cursor, nome, cpf, estado)
         print("Dados salvos com sucesso!")
     else:
